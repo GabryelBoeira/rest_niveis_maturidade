@@ -14,7 +14,7 @@ import {
   createCustomerService,
   UserAlreadyExistsError,
 } from "./services/customer.service";
-//import session from "express-session";
+import session from "express-session";
 import jwt from "jsonwebtoken";
 import { IResource, Resource } from "./http/resource";
 import { ValidationError } from "./errors";
@@ -23,13 +23,16 @@ import { defaultCorsOptions } from "./http/cors";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
 // comum API terem multiplas formas de auth
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //log requests
 app.use(async (req, res, next) => {
-  console.log(`request - [${new Date().toISOString()}] ${req.method} ${req.url}`);
+  console.log(
+    `request - [${new Date().toISOString()}] ${req.method} ${req.url}`,
+  );
   next();
 });
 
@@ -37,12 +40,10 @@ app.use(async (req, res, next) => {
 app.use(async (req, res, next) => {
   res.on("finish", () => {
     console.log(
-      `response - [${new Date().toISOString()}] ${req.method} ${req.url} ${res.statusCode} ${res.statusMessage}`
+      `response - [${new Date().toISOString()}] ${req.method} ${req.url} ${res.statusCode} ${res.statusMessage}`,
     );
     console.log(res.getHeaders());
   });
-
-  
 
   next();
 });
@@ -98,28 +99,28 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// app.use(
-//   session({
-//     secret: "123",
-//     resave: false,
-//     saveUninitialized: false,
-//     cookie: { secure: false },
-//   })
-// );
+app.use(
+  session({
+    secret: "123",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false },
+  }),
+);
 
-// app.use(async (req, res, next) => {
-//   const protectedRoutes = ["/admin", "/orders"];
-//   const isProtectedRoute = protectedRoutes.some((route) =>
-//     req.url.startsWith(route)
-//   );
+app.use(async (req, res, next) => {
+  const protectedRoutes = ["/admin", "/orders"];
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    req.url.startsWith(route),
+  );
 
-//   //@ts-expect-error
-//   if (isProtectedRoute && !req.session.userId) {
-//     return res.status(200).send("Unauthorized");
-//   }
+  //@ts-expect-error
+  if (isProtectedRoute && !req.session.userId) {
+    return res.status(200).send("Unauthorized");
+  }
 
-//   next();
-// });
+  next();
+});
 
 app.use(async (req, res, next) => {
   if (req.method === "OPTIONS") {
@@ -128,7 +129,7 @@ app.use(async (req, res, next) => {
 
   const protectedRoutes = ["/admin", "/orders"];
   const isProtectedRoute = protectedRoutes.some((route) =>
-    req.url.startsWith(route)
+    req.url.startsWith(route),
   );
 
   if (isProtectedRoute) {
@@ -255,12 +256,14 @@ app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-app.use((result: IResource, req: Request, res: Response, next: NextFunction) => {
-  if ('toJson' in result) {
-    return res.json(result.toJson());
-  }
-  next(result);
-});
+app.use(
+  (result: IResource, req: Request, res: Response, next: NextFunction) => {
+    if ("toJson" in result) {
+      return res.json(result.toJson());
+    }
+    next(result);
+  },
+);
 
 app.listen(PORT, async () => {
   const customerService = await createCustomerService();

@@ -1,0 +1,59 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build output
+dist/
+build/
+out/
+
+# TypeScript
+*.tsbuildinfo
+
+# Logs
+*.log
+
+# Runtime files
+pids/
+*.pid
+*.seed
+*.pid.lock
+.node_repl_history
+
+# Coverage
+coverage/
+nyc_output/
+
+# dotenv
+.env
+.env.*.local
+
+# Editor and OS files
+.idea/
+.DS_Store
+Thumbs.db
+
+# SQLite / DB files
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+
+# TypeORM / ORM configs (optional)
+ormconfig.json
+ormconfig.*.js
+
+# Misc
+*.tgz
+*.zip
+*.cache
+.eslintcache
+
+# Docker overrides (optional local files)
+docker-compose.override.yml
+
+# nodemon
+nodemon-debug.log
