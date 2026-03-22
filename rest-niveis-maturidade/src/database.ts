@@ -16,17 +16,7 @@ export async function createDatabaseConnection() {
       type: "sqlite",
       //database: "database.sqlite",
       database: ":memory:",
-      entities: [
-        User,
-        Customer,
-        Product,
-        Cart,
-        CartItem,
-        Category,
-        OrderItem,
-        Order,
-        Payment,
-      ],
+      entities: [User, Customer, Product, Cart, CartItem, Category, OrderItem, Order, Payment],
       //logging: true,
       synchronize: true,
     });

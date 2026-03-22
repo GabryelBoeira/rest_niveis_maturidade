@@ -3,15 +3,15 @@ import { createProductService } from "../services/product.service";
 
 const router = Router();
 
-router.get("/:productSlug", async (req, res) => {
-  const productService = await createProductService(); 
+router.get("/getProductBySlug", async (req, res) => {
+  const productService = await createProductService();
   const product = await productService.getProductBySlug(
-    req.params.productSlug as string
+    req.query.slug as string
   );
   res.json(product);
 });
 
-router.get("/", async (req, res) => {
+router.get("/listProducts", async (req, res) => {
   const productService = await createProductService();
   const {
     page = 1,
@@ -30,15 +30,6 @@ router.get("/", async (req, res) => {
       categories_slug,
     },
   });
-
-  // if(req.headers['if-modified-since'] === new Date().toUTCString()) {
-  //   res.set('Last-Modified', new Date().toUTCString());
-  //   res.set('Cache-Control', 'public, max-age=60');
-  //   res.status(304).end();
-  //   return
-  // }
-
-  // res.set('Last-Modified', new Date().toUTCString());
   res.json({ products, total });
 });
 

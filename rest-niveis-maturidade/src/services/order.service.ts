@@ -18,12 +18,12 @@ export class OrderService {
   async createOrder(data: {
     customerId: number;
     payment_method: PaymentMethod;
-    cart_uuid: string;
+    cart_id: number;
     card_token?: string
   }): Promise<{ order: Order; payment: Payment }> {
     const { customerId, payment_method, card_token } = data;
     const cart = await this.cartRepository.findOne({
-      where: {uuid: data.cart_uuid },
+      where: {id: data.cart_id },
       relations: ["items", "items.product", "customer"],
     });
 

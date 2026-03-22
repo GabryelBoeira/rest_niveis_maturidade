@@ -2,17 +2,16 @@ import { Router } from "express";
 import { createCustomerService } from "../services/customer.service";
 import { CreateCustomerDto } from "../validations/customer.validations";
 import { validateSync } from "class-validator";
-import { ValidationError } from "../errors";
 
 const router = Router();
 
-router.post("/", async (req, res, next) => {
+router.post("/createCustomer", async (req, res) => {
   const customerService = await createCustomerService();
   const validator = new CreateCustomerDto(req.body);
   const errors = validateSync(validator);
 
   if (errors.length > 0) {
-    return next(new ValidationError(errors));
+    return res.send(errors);
   }
 
   const { name, email, password, phone, address } = req.body;
@@ -26,7 +25,7 @@ router.post("/", async (req, res, next) => {
     });
     res.json(customer);
   } catch (e) {
-    next(e);
+    return res.send((e as any).message);
   }
 });
 

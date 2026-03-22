@@ -3,25 +3,22 @@ import { createCartService } from "../services/cart.service";
 
 const router = Router();
 
-router.post("/", async (req, res) => {
+router.post("/addItemToCart", async (req, res) => {
   const cartService = await createCartService();
   //@ts-expect-error
-  const customerId = req.userId;
-  const cart = await cartService.createCart(customerId);
-  res.json(cart);
-});
-
-router.post("/:cartUuid/items", async (req, res) => {
-  const cartService = await createCartService();
+  const cartId = req.session.cartId;
   // @ts-expect-error
   const customerId = req.userId;
   const { productId, quantity } = req.body;
   const cart = await cartService.addItemToCart({
-    uuid: req.params.cartUuid,
     customerId: customerId,
+    id: cartId,
     productId: parseInt(productId),
     quantity: parseInt(quantity),
   });
+  //@ts-expect-error
+  req.session.cartId = cart.id;
+  req.session.save();
   res.json({
     id: cart.id,
     items: cart.items.map((item) => ({
@@ -34,30 +31,35 @@ router.post("/:cartUuid/items", async (req, res) => {
       },
     })),
     createdAt: cart.createdAt,
-    customer: cart.customer,
+    customer: cart.customer
   });
 });
 
-router.get("/:cartUuid", async (req, res) => {
+router.get("/getCart", async (req, res) => {
   const cartService = await createCartService();
-  const cart = await cartService.getCart(req.params.cartUuid);
-  console.log(cart);
+  //@ts-expect-error
+  const cartId = req.session.cartId;
+  const cart = await cartService.getCart(parseInt(cartId as string));
   res.json(cart);
 });
 
-router.delete("/:cartUuid/items/:cartItemId", async (req, res) => {
+router.post("/removeItemFromCart", async (req, res) => {
   const cartService = await createCartService();
-  const { cartItemId } = req.params;
+  const { cartItemId } = req.body;
+  //@ts-expect-error
+  const cartId = req.session.cartId;
   await cartService.removeItemFromCart({
-    cartUuid: req.params.cartUuid,
+    cartId: parseInt(cartId),
     cartItemId: parseInt(cartItemId),
   });
   res.send({ message: "Item removed from cart" });
 });
 
-router.post("/:cartUuid/clear", async (req, res) => {
+router.post("/clearCart", async (req, res) => {
   const cartService = await createCartService();
-  const cart = await cartService.clearCart(req.params.cartUuid);
+  //@ts-expect-error
+  const cartId = req.session.cartId;
+  const cart = await cartService.clearCart(cartId);
   res.json(cart);
 });
 

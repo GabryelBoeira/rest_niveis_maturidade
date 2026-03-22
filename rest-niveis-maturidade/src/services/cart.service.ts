@@ -12,43 +12,24 @@ export class CartService {
     private customerRepository: Repository<Customer>
   ) {}
 
-  async getCart(uuid: string): Promise<Cart | null> {
+  async getCart(id: number): Promise<Cart | null> {
     return await this.cartRepository.findOne({
-      where: { uuid: uuid },
-      relations: ["items.product"],
+      where: { id: id },
+      relations: ["items", "items.product"],
     });
-  }
-
-  async createCart(customerId?: number){
-    let customer = null;
-    if (customerId) {
-      customer = await this.customerRepository.findOne({
-        where: { id: customerId },
-      });
-      if (!customer) {
-        throw new Error("Customer not found");
-      }
-    }
-  
-
-    const cart = new Cart();
-    cart.customer = customer;
-    cart.items = [];
-
-    return this.cartRepository.save(cart);
   }
 
   async addItemToCart(data: {
     productId: number;
     quantity: number;
-    uuid: string;
+    id?: number;
     customerId?: number;
   }): Promise<Cart> {
-    const { productId, quantity, uuid, customerId } = data;
+    const { productId, quantity, id, customerId } = data;
     const where = {} as any;
 
-    if (uuid) {
-      where.uuid = uuid;
+    if (id) {
+      where.uuid = id;
     }
 
     if (customerId) {
@@ -58,12 +39,28 @@ export class CartService {
     let cart = Object.keys(where).length
       ? await this.cartRepository.findOne({
           where,
-          relations: ["items.product"],
+          relations: ["items", "items.product"],
         })
       : null;
 
     if (!cart) {
-      throw new Error("Cart not found");
+      let customer = null;
+      if (customerId) {
+        customer = await this.customerRepository.findOne({
+          where: { id: customerId },
+        });
+        if (!customer) {
+          throw new Error("Customer not found");
+        }
+      }
+      if (!customer && customerId) {
+        throw new Error("Customer not found");
+      }
+
+      cart = new Cart();
+      cart.customer = customer;
+      cart.createdAt = new Date();
+      cart.items = [];
     }
 
     const product = await this.productRepository.findOne({
@@ -91,13 +88,13 @@ export class CartService {
   }
 
   async removeItemFromCart(data: {
-    cartUuid: string;
+    cartId: number;
     cartItemId: number;
   }): Promise<void> {
-    const { cartUuid, cartItemId } = data;
+    const { cartId, cartItemId } = data;
 
     const cartItem = await this.cartItemRepository.findOne({
-      where: { cart: { uuid: cartUuid }, id: cartItemId },
+      where: { cart: { id: cartId }, id: cartItemId },
     });
 
     if (!cartItem) {
@@ -107,10 +104,10 @@ export class CartService {
     await this.cartItemRepository.remove(cartItem);
   }
 
-  async clearCart(uuid: string): Promise<Cart | null> {
+  async clearCart(id: number): Promise<Cart | null> {
     const cart = await this.cartRepository.findOne({
-      where: { uuid },
-      relations: ["items.product"],
+      where: { id },
+      relations: ["items", "items.product"],
     });
     if (!cart) {
       return null;

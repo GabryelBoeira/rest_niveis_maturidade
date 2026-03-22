@@ -4,10 +4,7 @@ import { User } from "../entities/User";
 import { createDatabaseConnection } from "../database";
 
 export class CustomerService {
-  constructor(
-    private customerRepository: Repository<Customer>,
-    private userRepository: Repository<User>
-  ) {}
+  constructor(private customerRepository: Repository<Customer>,private userRepository: Repository<User>) {}
 
   async registerCustomer(data: {
     name: string;
@@ -22,7 +19,7 @@ export class CustomerService {
     const userExists = await this.userRepository.findOne({ where: { email } });
 
     if (userExists) {
-      throw new UserAlreadyExistsError("User already exists");
+      throw new Error("User already exists");
     }
 
     // Create a new user
@@ -44,14 +41,14 @@ export class CustomerService {
   }
 
   async updateCustomer(data: {
-    customerId: number;
+    email: string;
     phone?: string;
     address?: string;
     password?: string;
   }): Promise<Customer | null> {
-    const { customerId, phone, address, password } = data;
+    const { email, phone, address, password } = data;
     const customer = await this.customerRepository.findOne({
-      where: { id: customerId },
+      where: { user: { email } },
       relations: ["user"],
     });
     if (!customer) {
@@ -91,15 +88,8 @@ export class CustomerService {
   }
 }
 
-export async function createCustomerService(): Promise<CustomerService> {
-  const { customerRepository, userRepository } =
-    await createDatabaseConnection();
-  return new CustomerService(customerRepository, userRepository);
-}
 
-export class UserAlreadyExistsError extends Error {
-  constructor(email: string) {
-    super(`User with email ${email} already exists`);
-    this.name = "UserAlreadyExistsError";
-  }
+export async function createCustomerService(): Promise<CustomerService> {
+  const { customerRepository, userRepository } = await createDatabaseConnection();
+  return new CustomerService(customerRepository, userRepository);
 }
