@@ -114,6 +114,8 @@ Nesta etapa, a API deixa de ser um "buraco negro" de um único endpoint e passa 
 | Criar Pedido                 | POST        | /orders                                                                              |
 | Listar Pedidos               | GET         | /orders?page=1&limit=10                                                              |
 
+---
+
 ## Exemplo Arch-REST para E-commerce Estruturado - Level 2
 
 ### 🛠️ Detalhes do Nível 2 (Verbos HTTP)
@@ -125,3 +127,17 @@ Aqui, a API passa a utilizar o protocolo HTTP em sua plenitude semântica, adota
 - **Foco**: Padronização da interface e tratamento de erros via protocolo.
 
 ### Implementacao do Level 2
+
+---
+
+## Exemplo Arch-REST para E-commerce HATEOAS - Level 3
+
+### 🛠️ Detalhes do Nível 3 (HATEOAS)
+
+O nível mais alto de maturidade, onde a API se torna autodescritiva, fornecendo links que guiam o cliente sobre quais são as próximas ações possíveis.
+
+- **Abstração**: Introdução de hipermídia como motor do estado da aplicação.
+- **Exemplo**: Ao consultar uma conta via GET, o JSON de resposta inclui um campo links com URLs para efetuar_deposito, extrato ou encerrar_conta.
+- **Foco**: Desacoplamento entre cliente e servidor, permitindo que a API evolua sem quebrar o cliente.
+
+### Implementacao do Level 3
