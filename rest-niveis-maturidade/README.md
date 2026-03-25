@@ -12,6 +12,21 @@ Neste curso, exploramos os conceitos de REST e seus níveis de maturidade na pr�
 
 - Reposotorio base: [Full-Cycle-Rest](https://github.com/devfullcycle/fc4-rest-niveis-maturidade)
 
+## Executar o projeto
+
+- Windons
+
+```cmd
+  npm install
+  npm run dev
+```
+
+- Linux
+
+```bash
+  ./start.sh
+```
+
 ## Exemplo REST meia boca para E-commerce -
 
 ### 🛠️ Detalhes do Nível 0 (The Swamp of POX)

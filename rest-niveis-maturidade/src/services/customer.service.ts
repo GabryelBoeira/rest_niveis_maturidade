@@ -4,7 +4,10 @@ import { User } from "../entities/User";
 import { createDatabaseConnection } from "../database";
 
 export class CustomerService {
-  constructor(private customerRepository: Repository<Customer>,private userRepository: Repository<User>) {}
+  constructor(
+    private customerRepository: Repository<Customer>,
+    private userRepository: Repository<User>,
+  ) {}
 
   async registerCustomer(data: {
     name: string;
@@ -41,19 +44,19 @@ export class CustomerService {
   }
 
   async updateCustomer(data: {
-    email: string;
+    customerId: number;
     phone?: string;
     address?: string;
     password?: string;
   }): Promise<Customer | null> {
-    const { email, phone, address, password } = data;
+    const { customerId, phone, address, password } = data;
+
     const customer = await this.customerRepository.findOne({
-      where: { user: { email } },
+      where: { id: customerId },
       relations: ["user"],
     });
-    if (!customer) {
-      return null;
-    }
+
+    if (!customer) return null;
 
     if (phone) customer.phone = phone;
     if (address) customer.address = address;
@@ -88,8 +91,8 @@ export class CustomerService {
   }
 }
 
-
 export async function createCustomerService(): Promise<CustomerService> {
-  const { customerRepository, userRepository } = await createDatabaseConnection();
+  const { customerRepository, userRepository } =
+    await createDatabaseConnection();
   return new CustomerService(customerRepository, userRepository);
 }

@@ -14,6 +14,7 @@ router.post("/login", async (req, res) => {
       password: password as string,
     },
   });
+
   console.log(user);
   if (user) {
     //generate jwt token

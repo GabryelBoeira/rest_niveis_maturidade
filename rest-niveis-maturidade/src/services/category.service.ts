@@ -33,10 +33,8 @@ export class CategoryService {
   }): Promise<Category | null> {
     const { id, name, slug } = data;
     const category = await this.categoryRepository.findOne({ where: { id } });
-    if (!category) {
-      return null;
-    }
 
+    if (!category) return null;
     if (name) category.name = name;
     if (slug) category.slug = slug;
 
@@ -52,7 +50,7 @@ export class CategoryService {
       page: number;
       limit: number;
       filter?: { name?: string };
-    } = { page: 1, limit: 10 }
+    } = { page: 1, limit: 10 },
   ): Promise<{ categories: Category[]; total: number }> {
     const { page, limit, filter } = data;
     const where: any = {};
