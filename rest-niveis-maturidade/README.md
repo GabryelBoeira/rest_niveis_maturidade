@@ -141,6 +141,27 @@ Aqui, a API passa a utilizar o protocolo HTTP em sua plenitude semântica, adota
 - **Exemplo**: GET /transacoes para listar dados, POST /pagamentos para criar um registro e retorno de status code 201 Created ou 404 Not Found.
 - **Foco**: Padronização da interface e tratamento de erros via protocolo.
 
+### Lista de verbos
+
+| **Verbo** | **Objetivo**                                                                 | **IdPotente** | **Safe** |
+| --------- | ---------------------------------------------------------------------------- | ------------- | -------- |
+| `GET`     | **Recupera dados de um recurso** específico sem alterá-lo.                   | Sim           | Sim      |
+| `POST`    | **Cria um novo recurso** ou envia dados para processamento.                  | Não           | Não      |
+| `PUT`     | **Substitui/Atualiza integralmente** um recurso existente.                   | Sim           | Não      |
+| `PATCH`   | **Atualiza parcialmente** campos específicos de um recurso.                  | Sim           | Não      |
+| `DELETE`  | **Remove/Exclui** o recurso especificado.                                    | Sim           | Não      |
+| `OPTIONS` | Verifica quais **métodos e opções** são permitidos para o recurso.           | Sim           | Sim      |
+| `HEAD`    | Retorna apenas os **cabeçalhos** (meta-dados), sem o corpo da resposta.      | Sim           | Sim      |
+| `TRACE`   | Realiza um teste de **loop-back** para ver o caminho da requisição.          | Sim           | Não      |
+| `CONNECT` | Estabelece um **túnel** para o servidor (comum em conexões HTTPS via Proxy). | Não           | Não      |
+
+#### Notas Importantes:
+
+- **Safe (Seguro)**: São métodos que não alteram o estado do servidor (apenas leitura).
+- **Idempotente**: Significa que fazer a mesma requisição várias vezes terá o mesmo efeito que fazê-la uma única vez.
+- **Nota sobre o PATCH**: Embora na sua tabela esteja como "Sim", tecnicamente ele pode não ser idempotente dependendo de como é implementado (ex: um comando de "incrementar valor"), mas em APIs REST modernas, busca-se projetá-lo para ser.
+- **PUT vs PATCH**: Use PUT quando quiser enviar o objeto inteiro para substituir o que está lá. Use PATCH quando quiser mudar apenas o "e-mail" de um usuário, por exemplo, sem precisar enviar o resto dos dados.
+
 ### Implementacao do Level 2
 
 ---
