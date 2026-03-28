@@ -4,18 +4,18 @@ import { Product } from "./Product";
 
 @Entity()
 export class OrderItem {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ type: "int" })
-    quantity: number;
+  @Column({ type: "int" })
+  quantity: number;
 
-    @Column({ type: "float" })
-    price: number;
+  @Column({ type: "float" })
+  price: number;
 
-    @ManyToOne(() => Order, order => order.orderItems)
-    order: Order;
+  @ManyToOne(() => Order, (order) => order.orderItems)
+  order: Order;
 
-    @ManyToOne(() => Product)
-    product: Product;
+  @ManyToOne(() => Product)
+  product: Product;
 }
