@@ -1,3 +1,4 @@
 node_modules/
 database.sqlite
 .history/
+package-lock.json
