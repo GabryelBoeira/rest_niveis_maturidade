@@ -43,9 +43,10 @@ router.get("/", async (req, res) => {
   res.json(cart);
 });
 
-router.post("/items/:itemId/remove", async (req, res) => {
+router.delete("/items/:itemId", async (req, res) => {
   const cartService = await createCartService();
-  const { cartItemId } = req.body;
+  const cartItemId = req.params.itemId;
+
   //@ts-expect-error
   const cartId = req.session.cartId;
 
