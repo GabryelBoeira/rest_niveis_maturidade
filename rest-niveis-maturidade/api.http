@@ -53,18 +53,18 @@ GET http://localhost:3000/admin/customers?page=1&limit=10
 Authorization: Bearer {{ token }}
 
 ### Update a customer
-POST http://localhost:3000/admin/customers/{{ customer_id }}
+PATCH http://localhost:3000/admin/customers/{{ customer_id }}
 Content-Type: application/json
 Authorization: Bearer {{ token }}
 
 {
   "password": "newpassword",
-  "phone": "0987654321",
+  "phone": "487885569",
   "address": "456 Elm St"
 }
 
 ### Delete a customer
-POST http://localhost:3000/admin/customers/{{ customer_id }}/delete
+DELETE  http://localhost:3000/admin/customers/{{ customer_id }}
 Content-Type: application/json
 Authorization: Bearer {{ token }}
 
@@ -95,24 +95,19 @@ GET http://localhost:3000/admin/categories?page=1&limit=10&name=Category
 Authorization: Bearer {{ token }}
 
 ### Update a category
-POST http://localhost:3000/admin/categories/{{ category_id }}
+PATCH http://localhost:3000/admin/categories/{{ category_id }}
 Content-Type: application/json
 Authorization: Bearer {{ token }}
 
 {
-  "id": "{{ category_id }}",
   "name": "Updated Category Name",
   "slug": "updated-category-slug"
 }
 
 ### Delete a category
-POST http://localhost:3000/admin/categories/{{ category_id }}/delete
+DELETE  http://localhost:3000/admin/categories/{{ category_id }}
 Content-Type: application/json
 Authorization: Bearer {{ token }}
-
-{
-  "id": "{{ category_id }}"
-}
 
 
 ### 👉👉👉 Product Endpoints 👈👈👈
@@ -142,7 +137,7 @@ Authorization: Bearer {{ token }}
 GET http://localhost:3000/products/slug/{{ product_slug }}
 
 ### Update a product
-POST http://localhost:3000/admin/products/{{ product_id }}
+PATCH http://localhost:3000/admin/products/{{ product_id }}
 Content-Type: application/json
 Authorization: Bearer {{ token }}
 
@@ -156,13 +151,10 @@ Authorization: Bearer {{ token }}
 }
 
 ### Delete a product
-POST http://localhost:3000/admin/products/{{ product_id }}/delete
+DELETE  http://localhost:3000/admin/products/{{ product_id }}
 Content-Type: application/json
 Authorization: Bearer {{ token }}
 
-{
-  "id": "{{ product_id }}"
-}
 
 ### List products with pagination and optional filtering&name=Product&categories_slug=category-slug&user_id=1
 GET http://localhost:3000/products?page=1&limit=10

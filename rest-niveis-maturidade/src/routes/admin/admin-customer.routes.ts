@@ -31,7 +31,7 @@ router.get("/:customerId", async (req, res) => {
   return res.json(customer);
 });
 
-router.post("/:customerId", async (req, res) => {
+router.patch("/:customerId", async (req, res) => {
   const customerService = await createCustomerService();
   const { phone, address, password } = req.body;
   const customerId = parseInt(req.params.customerId);
@@ -45,10 +45,12 @@ router.post("/:customerId", async (req, res) => {
   res.json(customer);
 });
 
-router.post("/:customerId/delete", async (req, res) => {
+router.delete("/:customerId", async (req, res) => {
   const customerService = await createCustomerService();
   const customerId = req.params.customerId;
+
   await customerService.deleteCustomer(parseInt(customerId));
+
   res.send({ message: "Customer deleted successfully" });
 });
 

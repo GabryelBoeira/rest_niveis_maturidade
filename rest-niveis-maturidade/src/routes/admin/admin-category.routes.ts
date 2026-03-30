@@ -19,7 +19,7 @@ router.get("/:categoryId", async (req, res) => {
   res.json(category);
 });
 
-router.post("/:categoryId", async (req, res) => {
+router.patch("/:categoryId", async (req, res) => {
   const categoryService = await createCategoryService();
   const { name, slug } = req.body;
   const categoryId = req.params.categoryId;
@@ -32,9 +32,10 @@ router.post("/:categoryId", async (req, res) => {
   res.json(category);
 });
 
-router.post("/:categoryId/delete", async (req, res) => {
+router.delete("/:categoryId", async (req, res) => {
   const categoryService = await createCategoryService();
   const categoryId = parseInt(req.params.categoryId);
+
   await categoryService.deleteCategory(categoryId);
 
   res.sendStatus(204);
