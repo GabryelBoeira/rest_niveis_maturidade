@@ -178,27 +178,28 @@ Aqui, a API passa a utilizar o protocolo HTTP em sua plenitude semântica, adota
 | Atualizar Cliente            | PATCH       | /admin/customers/:customerId                                                         |
 | Deletar Cliente              | DELETE      | /admin/customers/:customerId                                                         |
 | **Categorias**               |             |                                                                                      |
-| Criar Categoria              | POST        | /admin/categories                                                                    |
-| Obter Categoria por Slug     | GET         | /categories/:categorySlug                                                            |
-| Obter Categoria por ID       | GET         | /admin/categories/:categoryId                                                        |
 | Listar Categorias (Público)  | GET         | /categories?page=1&limit=10&name=Category                                            |
+| Obter Categoria por Slug     | GET         | /categories/:categorySlug                                                            |
+| Criar Categoria              | POST        | /admin/categories                                                                    |
+| Obter Categoria por ID       | GET         | /admin/categories/:categoryId                                                        |
 | Listar Categorias (Admin)    | GET         | /admin/categories?page=1&limit=10&name=Category                                      |
 | Atualizar Categoria          | PATCH       | /admin/categories/:categoryId                                                        |
 | Deletar Categoria            | DELETE      | /admin/categories/:categoryId                                                        |
 | **Produtos**                 |             |                                                                                      |
+| Obter Produto por Slug       | GET         | /products/slug/:productSlug                                                          |
+| Listar Produtos (Público)    | GET         | /products?page=1&limit=10&name=Product&categories_slug=category-slug                 |
 | Criar Produto                | POST        | /admin/products                                                                      |
 | Obter Produto por ID (Admin) | GET         | /admin/products/:productId                                                           |
-| Obter Produto por Slug       | GET         | /products/slug/:productSlug                                                          |
 | Atualizar Produto            | PATCH       | /admin/products/:productId                                                           |
 | Deletar Produto              | DELETE      | /admin/products/:productId                                                           |
-| Listar Produtos (Público)    | GET         | /products?page=1&limit=10&name=Product&categories_slug=category-slug                 |
 | Listar Produtos (Admin)      | GET         | /admin/products?page=1&limit=10&name=Product&categories_slug=category-slug&user_id=1 |
 | Exportar Produtos (CSV)      | GET         | /admin/products/products.csv                                                         |
 | **Carrinho**                 |             |                                                                                      |
-| Adicionar Item ao Carrinho   | POST        | /cart/items                                                                          |
-| Obter Carrinho               | GET         | /cart                                                                                |
-| Remover Item do Carrinho     | DELETE      | /cart/items/:itemId                                                                  |
-| Limpar Carrinho              | POST        | /cart/clear                                                                          |
+| Criar o carrinho             | POST        | /cart                                                                                |
+| Adicionar Item ao Carrinho   | POST        | /cart/:cartId/items                                                                  |
+| Obter Carrinho               | GET         | /cart/:cartId                                                                        |
+| Remover Item do Carrinho     | DELETE      | /cart/:cartId/items/:itemId                                                          |
+| Limpar Carrinho              | POST        | /cart/:cartId/clear                                                                  |
 | **Pedidos**                  |             |                                                                                      |
 | Criar Pedido                 | POST        | /orders                                                                              |
 | Listar Pedidos               | GET         | /orders?page=1&limit=10                                                              |
