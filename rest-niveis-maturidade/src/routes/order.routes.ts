@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { createOrderService } from "../services/order.service";
+import { Resource, ResourceCollection } from "../http/resource";
 
 const router = Router();
 
-router.post("/", async (req, res) => {
+router.post("/", async (req, res, next) => {
   const orderService = await createOrderService();
 
   // @ts-expect-error
@@ -17,10 +18,11 @@ router.post("/", async (req, res) => {
     card_token,
   });
 
-  res.json({ order, payment });
+  const resource = new Resource({ order, payment });
+  next(resource);
 });
 
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   const orderService = await createOrderService();
   const { page = 1, limit = 10 } = req.query;
   // @ts-expect-error
@@ -31,7 +33,14 @@ router.get("/", async (req, res) => {
     customerId,
   });
 
-  res.json({ orders, total });
+  const collection = new ResourceCollection(orders, {
+    pagination: {
+      page: parseInt(page as string),
+      limit: parseInt(limit as string),
+      total,
+    },
+  });
+  next(collection);
 });
 
 export default router;

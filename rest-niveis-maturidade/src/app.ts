@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import { createDatabaseConnection } from "./database";
 import customerRoutes from "./routes/customer.routes";
 import categoryRoutes from "./routes/category.routes";
@@ -13,6 +13,7 @@ import jwtAuthRoutes from "./routes/jwt-auth.routes";
 import { createCustomerService } from "./services/customer.service";
 // import session from "express-session";
 import jwt from "jsonwebtoken";
+import { Resource } from "./http/resource";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -60,6 +61,13 @@ app.use("/admin/categories", adminCategoryRoutes);
 app.get("/", async (req, res) => {
   await createDatabaseConnection();
   res.send("Hello World!");
+});
+
+app.use((result: Resource, req: Request, res: Response, next: NextFunction) => {
+  if (result instanceof Resource) {
+    return res.json(result.toJSON());
+  }
+  next(result);
 });
 
 app.listen(PORT, async () => {

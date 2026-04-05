@@ -1,17 +1,20 @@
 import { Router } from "express";
 import { createProductService } from "../services/product.service";
+import { Resource, ResourceCollection } from "../http/resource";
 
 const router = Router();
 
-router.get("/:slug", async (req, res) => {
+router.get("/:slug", async (req, res, next) => {
   const productService = await createProductService();
   const product = await productService.getProductBySlug(
     req.params.slug as string,
   );
-  res.json(product);
+
+  const resource = new Resource(product);
+  next(resource);
 });
 
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   const productService = await createProductService();
   const {
     page = 1,
@@ -30,7 +33,15 @@ router.get("/", async (req, res) => {
       categories_slug,
     },
   });
-  res.json({ products, total });
+
+  const collection = new ResourceCollection(products, {
+    pagination: {
+      page: parseInt(page as string),
+      limit: parseInt(limit as string),
+      total,
+    },
+  });
+  next(collection);
 });
 
 export default router;

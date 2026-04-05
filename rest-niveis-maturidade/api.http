@@ -126,8 +126,9 @@ Authorization: Bearer {{ token }}
 }
 
 ###
-@product_id = {{ createProduct.response.body.id }}
-@product_slug = {{ createProduct.response.body.slug }}
+@product_id = {{ createProduct.response.body.data.id }}
+@product_slug = {{ createProduct.response.body.data.slug }}
+@product_name = {{ createProduct.response.body.data.name }}
 
 ### Get a product by ID
 GET http://localhost:3000/admin/products/{{ product_id }}
@@ -159,7 +160,7 @@ Authorization: Bearer {{ token }}
 GET http://localhost:3000/products?page=1&limit=10
 
 ### List products in admin with pagination and optional filtering
-GET http://localhost:3000/admin/products?page=1&limit=10&name=Product&categories_slug=category-slug&user_id=1
+GET http://localhost:3000/admin/products?page=1&limit=10&name={{ product_name }}&categories_slug={{ product_slug }}&user_id=1
 Authorization: Bearer {{ token }}
 
 ### Get csv of products
