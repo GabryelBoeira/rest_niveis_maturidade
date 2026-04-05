@@ -12,18 +12,19 @@ export class OrderService {
     private customerRepository: Repository<Customer>,
     private orderRepository: Repository<Order>,
     private orderItemRepository: Repository<OrderItem>,
-    private paymentRepository: Repository<Payment>
+    private paymentRepository: Repository<Payment>,
   ) {}
 
   async createOrder(data: {
     customerId: number;
     payment_method: PaymentMethod;
-    cart_id: number;
-    card_token?: string
+    cart_uuid: string;
+    card_token?: string;
   }): Promise<{ order: Order; payment: Payment }> {
     const { customerId, payment_method, card_token } = data;
+
     const cart = await this.cartRepository.findOne({
-      where: {id: data.cart_id },
+      where: { uuid: data.cart_uuid },
       relations: ["items", "items.product", "customer"],
     });
 
@@ -39,7 +40,7 @@ export class OrderService {
       throw new Error("Customer not found");
     }
 
-    if(!cart.customer){
+    if (!cart.customer) {
       cart.customer = customer;
       await this.cartRepository.save(cart);
     }
@@ -70,7 +71,7 @@ export class OrderService {
     payment.method = payment_method;
     payment.amount = order.orderItems.reduce(
       (total, item) => total + item.product.price * item.quantity,
-      0
+      0,
     );
     payment.status = PaymentStatus.PAID;
 
@@ -80,9 +81,9 @@ export class OrderService {
   }
 
   async listOrders(data: {
-    page: number,
-    limit: number,
-    customerId?: number
+    page: number;
+    limit: number;
+    customerId?: number;
   }): Promise<{ orders: Order[]; total: number }> {
     const { page, limit, customerId } = data;
     const where: any = {};
@@ -115,6 +116,6 @@ export async function createOrderService(): Promise<OrderService> {
     customerRepository,
     orderRepository,
     orderItemRepository,
-    paymentRepository
+    paymentRepository,
   );
 }

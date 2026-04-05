@@ -9,10 +9,7 @@ router.post("/", async (req, res) => {
   const customerId = req.userId;
   const cart = await cartService.createCart(customerId);
 
-  //@ts-expect-error
-  req.session.cartId = cart.id;
   req.session.save();
-
   res.json(cart);
 });
 

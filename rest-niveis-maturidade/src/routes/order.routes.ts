@@ -5,16 +5,16 @@ const router = Router();
 
 router.post("/", async (req, res) => {
   const orderService = await createOrderService();
-  const { payment_method, card_token } = req.body;
-  // @ts-expect-error
-  const { cart_id } = req.session;
+
   // @ts-expect-error
   const customerId = req.userId;
+  const { payment_method, card_token, cart_uuid } = req.body;
+
   const { order, payment } = await orderService.createOrder({
     customerId,
     payment_method,
+    cart_uuid,
     card_token,
-    cart_id,
   });
 
   res.json({ order, payment });
