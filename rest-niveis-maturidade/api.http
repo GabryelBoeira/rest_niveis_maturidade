@@ -34,7 +34,7 @@ Content-Type: application/json
 
 {
   "name": "john_doe",
-  "email": "john@example.com",
+  "email": "john@eaxample.com",
   "password": "securepassword",
   "phone": "1234567890",
   "address": "123 Main St"
@@ -81,11 +81,14 @@ Authorization: Bearer {{ token }}
 }
 
 ###
-@category_id = {{ createCategory.response.body.id }}
-@category_slug = {{ createCategory.response.body.slug }}
+@category_id = {{ createCategory.response.body.data.id }}
+@category_slug = {{ createCategory.response.body.data.slug }}
 
 ### Get a category by ID
-GET http://localhost:3000/categories/{{ category_slug }}
+GET http://localhost:3000/categories/{{ category_id }}
+
+### Get a category by slug
+GET http://localhost:3000/categories/slug/{{ category_slug }}
 
 ### List categories with pagination and optional filtering
 GET http://localhost:3000/categories?page=1&limit=10&name=Category
@@ -160,7 +163,7 @@ Authorization: Bearer {{ token }}
 GET http://localhost:3000/products?page=1&limit=10
 
 ### List products in admin with pagination and optional filtering
-GET http://localhost:3000/admin/products?page=1&limit=10&name={{ product_name }}&categories_slug={{ product_slug }}&user_id=1
+GET http://localhost:3000/admin/products?page=1&limit=10&name={{ product_name }}&categories_slug={{ product_slug }}&user_id={{ customer_id }}
 Authorization: Bearer {{ token }}
 
 ### Get csv of products

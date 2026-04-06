@@ -1,12 +1,40 @@
 import { Router } from "express";
 import { createCategoryService } from "../services/category.service";
 import { Resource, ResourceCollection } from "../http/resource";
+import { NotFoundError } from "../errors";
 
 const router = Router();
 
-router.get("/:slug", async (req, res, next) => {
+router.get("/slug/:slug", async (req, res, next) => {
   const categoryService = await createCategoryService();
   const category = await categoryService.getCategoryBySlug(req.params.slug);
+
+  if (!category) {
+    return next(
+      new NotFoundError(
+        `Category not found with the given slug ${req.params.slug}`,
+      ),
+    );
+  }
+
+  res.status(201);
+  const resource = new Resource(category);
+  next(resource);
+});
+
+router.get("/:categoryId", async (req, res, next) => {
+  const categoryService = await createCategoryService();
+  const category = await categoryService.getCategoryById(
+    parseInt(req.params.categoryId),
+  );
+
+  if (!category) {
+    return next(
+      new NotFoundError(
+        `Category not found with the given ID ${req.params.categoryId}`,
+      ),
+    );
+  }
 
   res.status(201);
   const resource = new Resource(category);

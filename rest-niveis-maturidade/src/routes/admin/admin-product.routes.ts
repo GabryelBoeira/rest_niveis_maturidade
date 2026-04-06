@@ -33,12 +33,6 @@ router.get("/:productId", async (req, res, next) => {
         `Product not found with the given ID ${req.params.productId}`,
       ),
     );
-
-    res.status(404).json({
-      status: 404,
-      title: "Not Found",
-      message: `Product not found with the given ID ${req.params.productId}`,
-    });
   }
 
   const resource = new Resource(product);
