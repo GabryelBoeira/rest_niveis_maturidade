@@ -3,6 +3,7 @@ import { createCustomerService } from "../services/customer.service";
 import { CreateCustomerDto } from "../validations/customer.validations";
 import { validateSync } from "class-validator";
 import { Resource } from "../http/resource";
+import { ValidationError } from "../errors";
 
 const router = Router();
 
@@ -12,7 +13,7 @@ router.post("/", async (req, res, next) => {
   const errors = validateSync(validator);
 
   if (errors.length > 0) {
-    return res.send(errors);
+    return next(new ValidationError(errors));
   }
 
   const { name, email, password, phone, address } = req.body;
@@ -25,11 +26,11 @@ router.post("/", async (req, res, next) => {
       address,
     });
 
+    res.status(201);
     const resource = new Resource(customer);
     next(resource);
   } catch (e) {
-    const resource = new Resource((e as any).message);
-    next(resource);
+    next(e);
   }
 });
 

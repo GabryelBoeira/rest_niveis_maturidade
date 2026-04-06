@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { createOrderService } from "../services/order.service";
 import { Resource, ResourceCollection } from "../http/resource";
+import { NotFoundError } from "../errors";
 
 const router = Router();
 
@@ -32,6 +33,14 @@ router.get("/", async (req, res, next) => {
     limit: parseInt(limit as string),
     customerId,
   });
+
+  if (!orders || orders.length === 0) {
+    return next(
+      new NotFoundError(
+        `Orders not found for the given customer ID ${customerId}`,
+      ),
+    );
+  }
 
   const collection = new ResourceCollection(orders, {
     pagination: {

@@ -1,14 +1,23 @@
 import { Router } from "express";
 import { createProductService } from "../services/product.service";
 import { Resource, ResourceCollection } from "../http/resource";
+import { NotFoundError } from "../errors";
 
 const router = Router();
 
-router.get("/:slug", async (req, res, next) => {
+router.get("/slug/:slug", async (req, res, next) => {
   const productService = await createProductService();
   const product = await productService.getProductBySlug(
     req.params.slug as string,
   );
+
+  if (!product) {
+    return next(
+      new NotFoundError(
+        `Product not found with the given slug ${req.params.slug}`,
+      ),
+    );
+  }
 
   const resource = new Resource(product);
   next(resource);

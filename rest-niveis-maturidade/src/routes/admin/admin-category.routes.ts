@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { createCategoryService } from "../../services/category.service";
 import { Resource, ResourceCollection } from "../../http/resource";
+import { NotFoundError } from "../../errors";
 
 const router = Router();
 
@@ -19,6 +20,14 @@ router.get("/:categoryId", async (req, res, next) => {
   const category = await categoryService.getCategoryById(
     parseInt(req.params.categoryId),
   );
+
+  if (!category) {
+    return next(
+      new NotFoundError(
+        `Category not found with the given ID ${req.params.categoryId}`,
+      ),
+    );
+  }
 
   const resource = new Resource(category);
   next(resource);

@@ -1,24 +1,38 @@
 import { Router } from "express";
 import { createCustomerService } from "../../services/customer.service";
 import { Resource, ResourceCollection } from "../../http/resource";
+import { NotFoundError, ValidationError } from "../../errors";
+import { CreateCustomerDto } from "../../validations/customer.validations";
+import { validateSync } from "class-validator";
+import { Not } from "typeorm";
 
 const router = Router();
 
 router.post("/", async (req, res, next) => {
   const customerService = await createCustomerService();
   const { name, email, password, phone, address } = req.body;
+  const validator = new CreateCustomerDto(req.body);
+  const errors = validateSync(validator);
 
-  const customer = await customerService.registerCustomer({
-    name,
-    email,
-    password,
-    phone,
-    address,
-  });
+  if (errors.length > 0) {
+    return next(new ValidationError(errors));
+  }
 
-  res.status(201);
-  const resource = new Resource(customer);
-  next(resource);
+  try {
+    const customer = await customerService.registerCustomer({
+      name,
+      email,
+      password,
+      phone,
+      address,
+    });
+
+    res.status(201);
+    const resource = new Resource(customer);
+    next(resource);
+  } catch (e) {
+    next(e);
+  }
 });
 
 router.get("/:customerId", async (req, res, next) => {
@@ -29,7 +43,11 @@ router.get("/:customerId", async (req, res, next) => {
 
   // Se o cliente não existir
   if (!customer) {
-    return res.status(404).json({ message: "Customer not found" });
+    return next(
+      new NotFoundError(
+        `Customer not found with the given ID ${req.params.customerId}`,
+      ),
+    );
   }
 
   const resource = new Resource(customer);
@@ -49,7 +67,11 @@ router.patch("/:customerId", async (req, res, next) => {
   });
 
   if (!customer) {
-    return res.status(404).json({ message: "Customer not found" });
+    return next(
+      new NotFoundError(
+        `Customer not found with the given ID ${req.params.customerId}`,
+      ),
+    );
   }
 
   const resource = new Resource(customer);

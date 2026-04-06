@@ -13,8 +13,7 @@ router.post("/login", async (req, res) => {
     },
   });
   if (user) {
-    //@ts-expect-error
-    req.session.userId = user.id;
+    (req as any).session.userId = user.id;
     req.session.save();
     return res.send("Logged in successfully");
   }

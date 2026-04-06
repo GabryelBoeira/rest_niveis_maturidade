@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { createProductService } from "../../services/product.service";
 import { Resource, ResourceCollection } from "../../http/resource";
+import { NotFoundError } from "../../errors";
 
 const router = Router();
 
@@ -15,6 +16,7 @@ router.post("/", async (req, res, next) => {
     categoryIds,
   );
 
+  res.status(201);
   const resource = new Resource(product);
   next(resource);
 });
@@ -24,6 +26,20 @@ router.get("/:productId", async (req, res, next) => {
   const product = await productService.getProductById(
     parseInt(req.params.productId),
   );
+
+  if (!product) {
+    return next(
+      new NotFoundError(
+        `Product not found with the given ID ${req.params.productId}`,
+      ),
+    );
+
+    res.status(404).json({
+      status: 404,
+      title: "Not Found",
+      message: `Product not found with the given ID ${req.params.productId}`,
+    });
+  }
 
   const resource = new Resource(product);
   next(resource);
@@ -52,8 +68,7 @@ router.delete("/:productId", async (req, res) => {
   const id = req.params.productId;
 
   await productService.deleteProduct(parseInt(id));
-
-  res.send({ message: "Product deleted successfully" });
+  res.status(204).send();
 });
 
 router.get("/", async (req, res, next) => {

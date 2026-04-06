@@ -8,10 +8,15 @@ import orderRoutes from "./routes/order.routes";
 import adminProductRoutes from "./routes/admin/admin-product.routes";
 import adminCustomerRoutes from "./routes/admin/admin-customer.routes";
 import adminCategoryRoutes from "./routes/admin/admin-category.routes";
+import {
+  ValidationError,
+  UserAlreadyExistsError,
+  NotFoundError,
+} from "./errors";
 import loginRoutes from "./routes/session-auth.routes";
 import jwtAuthRoutes from "./routes/jwt-auth.routes";
 import { createCustomerService } from "./services/customer.service";
-// import session from "express-session";
+import session from "express-session";
 import jwt from "jsonwebtoken";
 import { Resource } from "./http/resource";
 
@@ -19,6 +24,15 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+
+app.use(
+  session({
+    secret: "your-secret-key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false }, // set to true if using HTTPS
+  }),
+);
 
 app.use(async (req, res, next) => {
   const protectedRoutes = ["/admin", "/orders"];
@@ -37,8 +51,7 @@ app.use(async (req, res, next) => {
 
     try {
       const decoded = jwt.verify(token, "123");
-      //@ts-expect-error
-      req.userId = decoded.sub;
+      (req as any).userId = Number(decoded.sub);
     } catch (e) {
       return res.status(200).send({ message: "Unauthorized" });
     }
@@ -61,6 +74,41 @@ app.use("/admin/categories", adminCategoryRoutes);
 app.get("/", async (req, res) => {
   await createDatabaseConnection();
   res.send("Hello World!");
+});
+
+app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error(error);
+
+  if (error instanceof ValidationError) {
+    return res.status(422).json({
+      title: "Unprocessable Entity",
+      status: 422,
+      detail: {
+        errors: error.error.map((err) => ({
+          property: err.property,
+          constraints: err.constraints,
+        })),
+      },
+    });
+  }
+
+  if (error instanceof UserAlreadyExistsError) {
+    return res.status(409).json({
+      title: "Conflict",
+      status: 409,
+      detail: error.message,
+    });
+  }
+
+  if (error instanceof NotFoundError) {
+    return res.status(404).json({
+      title: "Not Found",
+      status: 404,
+      detail: error.message,
+    });
+  }
+
+  next(error);
 });
 
 app.use((result: Resource, req: Request, res: Response, next: NextFunction) => {
