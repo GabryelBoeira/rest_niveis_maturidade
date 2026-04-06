@@ -5,6 +5,7 @@ import { Cart } from "../entities/Cart";
 import { Payment, PaymentMethod, PaymentStatus } from "../entities/Payment";
 import { createDatabaseConnection } from "../database";
 import { Customer } from "../entities/Customer";
+import { NotFoundError } from "../errors";
 
 export class OrderService {
   constructor(
@@ -29,7 +30,7 @@ export class OrderService {
     });
 
     if (!cart) {
-      throw new Error("Cart not found");
+      throw new NotFoundError("Cart not found");
     }
 
     const customer = await this.customerRepository.findOne({
@@ -37,7 +38,7 @@ export class OrderService {
     });
 
     if (!customer) {
-      throw new Error("Customer not found");
+      throw new NotFoundError("Customer not found");
     }
 
     if (!cart.customer) {
