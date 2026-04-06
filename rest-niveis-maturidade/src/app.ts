@@ -19,6 +19,7 @@ import { createCustomerService } from "./services/customer.service";
 import session from "express-session";
 import jwt from "jsonwebtoken";
 import { Resource } from "./http/resource";
+import { error } from "console";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -77,6 +78,10 @@ app.get("/", async (req, res) => {
 });
 
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+  if (!(error instanceof Error)) {
+    return next(error);
+  }
+
   console.error(error);
 
   if (error instanceof ValidationError) {
@@ -108,7 +113,11 @@ app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
     });
   }
 
-  next(error);
+  res.status(500).json({
+    title: "Internal Server Error",
+    status: 500,
+    detail: error.message,
+  });
 });
 
 app.use((result: Resource, req: Request, res: Response, next: NextFunction) => {
