@@ -9,6 +9,7 @@ router.post("/", async (req, res, next) => {
   const { name, slug } = req.body;
   const category = await categoryService.createCategory({ name, slug });
 
+  res.status(201);
   const resource = new Resource(category);
   next(resource);
 });
@@ -43,7 +44,7 @@ router.delete("/:categoryId", async (req, res) => {
 
   await categoryService.deleteCategory(categoryId);
 
-  res.sendStatus(204);
+  res.status(204).send();
 });
 
 router.get("/", async (req, res, next) => {

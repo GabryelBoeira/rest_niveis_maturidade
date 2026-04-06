@@ -8,6 +8,7 @@ router.get("/:slug", async (req, res, next) => {
   const categoryService = await createCategoryService();
   const category = await categoryService.getCategoryBySlug(req.params.slug);
 
+  res.status(201);
   const resource = new Resource(category);
   next(resource);
 });

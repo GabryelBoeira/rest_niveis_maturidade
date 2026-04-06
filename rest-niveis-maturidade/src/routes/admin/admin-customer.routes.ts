@@ -16,6 +16,7 @@ router.post("/", async (req, res, next) => {
     address,
   });
 
+  res.status(201);
   const resource = new Resource(customer);
   next(resource);
 });
@@ -61,7 +62,7 @@ router.delete("/:customerId", async (req, res) => {
 
   await customerService.deleteCustomer(parseInt(customerId));
 
-  res.send({ message: "Customer deleted successfully" });
+  res.status(204).send();
 });
 
 router.get("/", async (req, res, next) => {
