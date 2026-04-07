@@ -20,6 +20,7 @@ import session from "express-session";
 import jwt from "jsonwebtoken";
 import { Resource } from "./http/resource";
 import { error } from "console";
+import { url } from "inspector";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -46,6 +47,42 @@ app.use(async (req, res, next) => {
   }
 
   return next();
+});
+
+app.use(async (req, res, next) => {
+  const routesAllowingAlternateAccept = [
+    {
+      url: "/admin/products",
+      method: "GET",
+      accept: "text/csv",
+    },
+  ];
+
+  const acceptHeader = req.headers["accept"];
+  if (!acceptHeader) {
+    return next();
+  }
+
+  if (acceptHeader === "application/json") {
+    return next();
+  }
+
+  const route = routesAllowingAlternateAccept.find(
+    (r) =>
+      r.url === req.path &&
+      r.method === req.method &&
+      r.accept === acceptHeader,
+  );
+
+  if (route && acceptHeader === route.accept) {
+    return next();
+  }
+
+  return res.status(406).send({
+    title: "Not Acceptable",
+    status: 406,
+    detail: `Not acceptable - ${acceptHeader}`,
+  });
 });
 
 app.use(

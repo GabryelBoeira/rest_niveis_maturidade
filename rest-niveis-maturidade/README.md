@@ -193,7 +193,7 @@ Aqui, a API passa a utilizar o protocolo HTTP em sua plenitude semântica, adota
 | Atualizar Produto            | PATCH       | /admin/products/:productId                                                           |
 | Deletar Produto              | DELETE      | /admin/products/:productId                                                           |
 | Listar Produtos (Admin)      | GET         | /admin/products?page=1&limit=10&name=Product&categories_slug=category-slug&user_id=1 |
-| Exportar Produtos (CSV)      | GET         | /admin/products/products.csv                                                         |
+| Exportar Produtos (CSV)      | GET         | /admin/products?page=1&limit=10 (Adicionar Accept: text/csv)                         |
 | **Carrinho**                 |             |                                                                                      |
 | Criar o carrinho             | POST        | /cart                                                                                |
 | Adicionar Item ao Carrinho   | POST        | /cart/:cartId/items                                                                  |

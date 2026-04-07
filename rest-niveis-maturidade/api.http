@@ -180,17 +180,23 @@ DELETE  http://localhost:3000/admin/products/{{ product_id }}
 Content-Type: application/json
 Authorization: Bearer {{ token }}
 
-
 ### List products with pagination and optional filtering&name=Product&categories_slug=category-slug&user_id=1
 GET http://localhost:3000/products?page=1&limit=10
+Accept: application/json
 
-### List products in admin with pagination and optional filtering
+### List products in admin with pagination and optional filterings
 GET http://localhost:3000/admin/products?page=1&limit=10&name={{ product_name }}&categories_slug={{ product_slug }}&user_id={{ customer_id }}
 Authorization: Bearer {{ token }}
 
-### Get csv of products
-GET http://localhost:3000/admin/products/products.csv
+### List products in admin with pagination and optional filterings
+GET http://localhost:3000/admin/products?page=1&limit=10&name={{ product_name }}
 Authorization: Bearer {{ token }}
+Accept: application/json
+
+### Get csv of products
+GET http://localhost:3000/admin/products?page=1&limit=10
+Authorization: Bearer {{ token }}
+Accept: text/csv
 
 
 ### 👉👉👉 Cart Endpoints 👈👈👈
