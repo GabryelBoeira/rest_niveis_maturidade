@@ -28,6 +28,28 @@ POST http://localhost:3000/session/logout
 
 ### 👉👉👉 Customer Endpoints 👈👈👈
 
+# Create a customer with xml
+POST http://localhost:3000/customers
+Content-Type: application/xml
+
+<customer>
+ <email>john10@eaxample.com</email>
+ <name>john_doe</name>
+ <email>john10@eaxample.com</email>
+ <password>securepassword</password>
+ <phone>1234567890</phone>
+ <address>123 Main St</address>
+</customer>
+
+###
+# Create a customer with form-urlencoded
+POST http://localhost:3000/customers
+Content-Type: application/x-www-form-urlencoded
+
+name=john_doe&email=john10@eaxample.com&password=securepassword&phone=1234567890&address=123%20Main%20St
+
+###
+
 # @name createCustomer
 POST http://localhost:3000/customers
 Content-Type: application/json

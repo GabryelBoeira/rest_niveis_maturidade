@@ -25,6 +25,28 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(async (req, res, next) => {
+  if (!req.headers["content-type"]) {
+    return next();
+  }
+
+  const allowedTypes = [
+    "application/json",
+    "application/x-www-form-urlencoded",
+  ];
+
+  if (!allowedTypes.includes(req.headers["content-type"])) {
+    return res.status(415).json({
+      title: "Unsupported Media Type",
+      status: 415,
+      detail: `Content-Type must be one of: ${allowedTypes.join(", ")}`,
+    });
+  }
+
+  return next();
+});
 
 app.use(
   session({
