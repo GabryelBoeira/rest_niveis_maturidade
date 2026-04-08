@@ -1,7 +1,6 @@
-import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, Length } from "class-validator";
 
 export class CreateCustomerDto {
-
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -22,7 +21,7 @@ export class CreateCustomerDto {
   @IsString()
   address: string;
 
-  constructor(data: any){
+  constructor(data: any) {
     this.name = data.name;
     this.email = data.email;
     this.password = data.password;
