@@ -29,7 +29,25 @@ router.post("/", corsOptions, async (req, res, next) => {
   );
 
   res.status(201);
-  const resource = new Resource(product);
+  const resource = new Resource(product, {
+    _links: {
+      self: {
+        href: `/admin/products/${product.id}`,
+        action: "GET",
+        type: "application/json",
+      },
+      update: {
+        href: `/admin/products/${product.id}`,
+        action: "PATCH",
+        type: "application/json",
+      },
+      delete: {
+        href: `/admin/products/${product.id}`,
+        action: "DELETE",
+        type: "application/json",
+      },
+    },
+  });
   next(resource);
 });
 
