@@ -2,10 +2,17 @@
 import { Router } from "express";
 import { createDatabaseConnection } from "../database";
 import jwt from "jsonwebtoken";
+import { defaultCorsOptions } from "../http/cors";
+import cors from "cors";
 
 const router = Router();
 
-router.post("/login", async (req, res) => {
+const corslogin = cors({
+  ...defaultCorsOptions,
+  methods: ["POST"],
+});
+
+router.post("/login", corslogin, async (req, res) => {
   const { email, password } = req.body;
   const { userRepository } = await createDatabaseConnection();
   const user = await userRepository.findOne({
@@ -23,5 +30,7 @@ router.post("/login", async (req, res) => {
 
   res.status(401).send("Invalid email or password");
 });
+
+router.options("/login", corslogin);
 
 export default router;

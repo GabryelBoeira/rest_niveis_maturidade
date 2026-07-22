@@ -2,10 +2,22 @@ import { Router } from "express";
 import { createCategoryService } from "../../services/category.service";
 import { Resource, ResourceCollection } from "../../http/resource";
 import { NotFoundError } from "../../errors";
+import { defaultCorsOptions } from "../../http/cors";
+import cors from "cors";
 
 const router = Router();
 
-router.post("/", async (req, res, next) => {
+const corsOptions = cors({
+  ...defaultCorsOptions,
+  methods: ["GET", "POST"],
+});
+
+const corsItem = cors({
+  ...defaultCorsOptions,
+  methods: ["GET", "DELETE", "PATCH"],
+});
+
+router.post("/", corsOptions, async (req, res, next) => {
   const categoryService = await createCategoryService();
   const { name, slug } = req.body;
   const category = await categoryService.createCategory({ name, slug });
@@ -15,7 +27,7 @@ router.post("/", async (req, res, next) => {
   next(resource);
 });
 
-router.get("/:categoryId", async (req, res, next) => {
+router.get("/:categoryId", corsItem, async (req, res, next) => {
   const categoryService = await createCategoryService();
   const category = await categoryService.getCategoryById(
     parseInt(req.params.categoryId),
@@ -33,7 +45,7 @@ router.get("/:categoryId", async (req, res, next) => {
   next(resource);
 });
 
-router.patch("/:categoryId", async (req, res, next) => {
+router.patch("/:categoryId", corsItem, async (req, res, next) => {
   const categoryService = await createCategoryService();
   const { name, slug } = req.body;
   const categoryId = req.params.categoryId;
@@ -47,7 +59,7 @@ router.patch("/:categoryId", async (req, res, next) => {
   next(resource);
 });
 
-router.delete("/:categoryId", async (req, res) => {
+router.delete("/:categoryId", corsItem, async (req, res) => {
   const categoryService = await createCategoryService();
   const categoryId = parseInt(req.params.categoryId);
 
@@ -56,7 +68,7 @@ router.delete("/:categoryId", async (req, res) => {
   res.status(204).send();
 });
 
-router.get("/", async (req, res, next) => {
+router.get("/", corsOptions, async (req, res, next) => {
   const categoryService = await createCategoryService();
   const { page = 1, limit = 10, name } = req.query;
   const { categories, total } = await categoryService.listCategories({
@@ -74,5 +86,8 @@ router.get("/", async (req, res, next) => {
   });
   next(collection);
 });
+
+router.options("/", corsOptions);
+router.options("/:categoryId", corsItem);
 
 export default router;

@@ -1,11 +1,18 @@
+import { validateSync } from "class-validator";
+import cors from "cors";
 import { Router } from "express";
+import { ValidationError } from "../errors";
+import { defaultCorsOptions } from "../http/cors";
+import { Resource } from "../http/resource";
 import { createCustomerService } from "../services/customer.service";
 import { CreateCustomerDto } from "../validations/customer.validations";
-import { validateSync } from "class-validator";
-import { Resource } from "../http/resource";
-import { ValidationError } from "../errors";
 
 const router = Router();
+
+const corsBasePath = cors({
+  ...defaultCorsOptions,
+  methods: ["POST"],
+});
 
 router.post("/", async (req, res, next) => {
   const customerService = await createCustomerService();
@@ -33,5 +40,7 @@ router.post("/", async (req, res, next) => {
     next(e);
   }
 });
+
+router.options("/", corsBasePath);
 
 export default router;

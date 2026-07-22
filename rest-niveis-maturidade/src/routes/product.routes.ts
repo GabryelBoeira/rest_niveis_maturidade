@@ -2,10 +2,22 @@ import { Router } from "express";
 import { createProductService } from "../services/product.service";
 import { Resource, ResourceCollection } from "../http/resource";
 import { NotFoundError } from "../errors";
+import { defaultCorsOptions } from "../http/cors";
+import cors from "cors";
 
 const router = Router();
 
-router.get("/slug/:slug", async (req, res, next) => {
+const corsBasePath = cors({
+  ...defaultCorsOptions,
+  methods: ["GET"],
+});
+
+const corsSlugPath = cors({
+  ...defaultCorsOptions,
+  methods: ["GET"],
+});
+
+router.get("/slug/:slug", corsSlugPath, async (req, res, next) => {
   const productService = await createProductService();
   const product = await productService.getProductBySlug(
     req.params.slug as string,
@@ -23,7 +35,7 @@ router.get("/slug/:slug", async (req, res, next) => {
   next(resource);
 });
 
-router.get("/", async (req, res, next) => {
+router.get("/", corsBasePath, async (req, res, next) => {
   const productService = await createProductService();
   const {
     page = 1,
@@ -52,5 +64,8 @@ router.get("/", async (req, res, next) => {
   });
   next(collection);
 });
+
+router.options("/", corsBasePath);
+router.options("/slug/:slug", corsSlugPath);
 
 export default router;

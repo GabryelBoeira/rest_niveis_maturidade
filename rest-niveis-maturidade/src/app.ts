@@ -19,8 +19,10 @@ import { createCustomerService } from "./services/customer.service";
 import session from "express-session";
 import jwt from "jsonwebtoken";
 import { Resource } from "./http/resource";
+import cors from "cors";
 import { error } from "console";
 import { url } from "inspector";
+import { defaultCorsOptions } from "./http/cors";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -63,7 +65,7 @@ app.use(async (req, res, next) => {
     return next();
   }
 
-  if (acceptHeader === "application/json") {
+  if (acceptHeader === "application/json" || acceptHeader === "*/*") {
     return next();
   }
 
@@ -93,6 +95,33 @@ app.use(
     cookie: { secure: false }, // set to true if using HTTPS
   }),
 );
+
+app.use(async (req, res, next) => {
+  if (req.method === "OPTIONS") {
+    return next();
+  }
+
+  const origin = req.headers.origin;
+
+  // Valida se a requisição é de uma origem permitida
+  if (!origin) {
+    return res.status(400).json({
+      message: "Origin header is missing",
+      status: 400,
+      detail: "Origin header is required for CORS requests",
+    });
+  }
+
+  if (!(defaultCorsOptions.origin! as string).split(",").includes(origin)) {
+    return res.status(403).json({
+      message: "Origin not allowed",
+      status: 403,
+      detail: "The requested origin is not allowed for CORS requests",
+    });
+  }
+
+  next();
+});
 
 app.use(async (req, res, next) => {
   const protectedRoutes = ["/admin", "/orders"];

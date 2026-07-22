@@ -1,14 +1,25 @@
-import { Router } from "express";
-import { createCustomerService } from "../../services/customer.service";
-import { Resource, ResourceCollection } from "../../http/resource";
-import { NotFoundError, ValidationError } from "../../errors";
-import { CreateCustomerDto } from "../../validations/customer.validations";
 import { validateSync } from "class-validator";
-import { Not } from "typeorm";
+import { Router } from "express";
+import { NotFoundError, ValidationError } from "../../errors";
+import { Resource, ResourceCollection } from "../../http/resource";
+import { createCustomerService } from "../../services/customer.service";
+import { CreateCustomerDto } from "../../validations/customer.validations";
+import { defaultCorsOptions } from "../../http/cors";
+import cors from "cors";
 
 const router = Router();
 
-router.post("/", async (req, res, next) => {
+const corsOptions = cors({
+  ...defaultCorsOptions,
+  methods: ["GET", "POST"],
+});
+
+const corsItem = cors({
+  ...defaultCorsOptions,
+  methods: ["GET", "DELETE", "PATCH"],
+});
+
+router.post("/", corsOptions, async (req, res, next) => {
   const customerService = await createCustomerService();
   const { name, email, password, phone, address } = req.body;
   const validator = new CreateCustomerDto(req.body);
@@ -35,7 +46,7 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.get("/:customerId", async (req, res, next) => {
+router.get("/:customerId", corsItem, async (req, res, next) => {
   const customerService = await createCustomerService();
   const customer = await customerService.getCustomer(
     parseInt(req.params.customerId),
@@ -54,7 +65,7 @@ router.get("/:customerId", async (req, res, next) => {
   next(resource);
 });
 
-router.patch("/:customerId", async (req, res, next) => {
+router.patch("/:customerId", corsItem, async (req, res, next) => {
   const customerService = await createCustomerService();
   const { phone, address, password } = req.body;
   const customerId = parseInt(req.params.customerId);
@@ -78,7 +89,7 @@ router.patch("/:customerId", async (req, res, next) => {
   next(resource);
 });
 
-router.delete("/:customerId", async (req, res) => {
+router.delete("/:customerId", corsItem, async (req, res) => {
   const customerService = await createCustomerService();
   const customerId = req.params.customerId;
 
@@ -87,7 +98,7 @@ router.delete("/:customerId", async (req, res) => {
   res.status(204).send();
 });
 
-router.get("/", async (req, res, next) => {
+router.get("/", corsOptions, async (req, res, next) => {
   const customerService = await createCustomerService();
   const { page = 1, limit = 10 } = req.query;
 
@@ -105,5 +116,8 @@ router.get("/", async (req, res, next) => {
   });
   next(collection);
 });
+
+router.options("/", corsOptions);
+router.options("/:customerId", corsItem);
 
 export default router;

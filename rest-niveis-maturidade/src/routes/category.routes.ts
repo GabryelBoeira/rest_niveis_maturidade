@@ -2,10 +2,27 @@ import { Router } from "express";
 import { createCategoryService } from "../services/category.service";
 import { Resource, ResourceCollection } from "../http/resource";
 import { NotFoundError } from "../errors";
+import { defaultCorsOptions } from "../http/cors";
+import cors from "cors";
 
 const router = Router();
 
-router.get("/slug/:slug", async (req, res, next) => {
+const corsBasePath = cors({
+  ...defaultCorsOptions,
+  methods: ["GET"],
+});
+
+const corsSlug = cors({
+  ...defaultCorsOptions,
+  methods: ["GET"],
+});
+
+const corsItem = cors({
+  ...defaultCorsOptions,
+  methods: ["POST"],
+});
+
+router.get("/slug/:slug", corsSlug, async (req, res, next) => {
   const categoryService = await createCategoryService();
   const category = await categoryService.getCategoryBySlug(req.params.slug);
 
@@ -22,7 +39,7 @@ router.get("/slug/:slug", async (req, res, next) => {
   next(resource);
 });
 
-router.get("/:categoryId", async (req, res, next) => {
+router.get("/:categoryId", corsItem, async (req, res, next) => {
   const categoryService = await createCategoryService();
   const category = await categoryService.getCategoryById(
     parseInt(req.params.categoryId),
@@ -41,7 +58,7 @@ router.get("/:categoryId", async (req, res, next) => {
   next(resource);
 });
 
-router.get("/", async (req, res, next) => {
+router.get("/", corsBasePath, async (req, res, next) => {
   const categoryService = await createCategoryService();
   const { page = 1, limit = 10, name } = req.query;
 
@@ -60,5 +77,9 @@ router.get("/", async (req, res, next) => {
   });
   next(collection);
 });
+
+router.options("/", corsBasePath);
+router.options("/slug/:slug", corsSlug);
+router.options("/:categoryId", corsItem);
 
 export default router;

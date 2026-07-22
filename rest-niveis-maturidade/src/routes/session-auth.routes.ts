@@ -1,9 +1,21 @@
 import { Router } from "express";
 import { createDatabaseConnection } from "../database";
+import { defaultCorsOptions } from "../http/cors";
+import cors from "cors";
 
 const router = Router();
 
-router.post("/login", async (req, res) => {
+const corslogin = cors({
+  ...defaultCorsOptions,
+  methods: ["POST"],
+});
+
+const corsLogout = cors({
+  ...defaultCorsOptions,
+  methods: ["POST"],
+});
+
+router.post("/login", corslogin, async (req, res) => {
   const { email, password } = req.query;
   const { userRepository } = await createDatabaseConnection();
   const user = await userRepository.findOne({
@@ -21,10 +33,13 @@ router.post("/login", async (req, res) => {
   res.status(401).send("Invalid email or password");
 });
 
-router.post("/logout", async (req, res) => {
+router.post("/logout", corsLogout, async (req, res) => {
   req.session.destroy(() => {
     res.send("Logged out successfully");
   });
 });
+
+router.options("/login", corslogin);
+router.options("/logout", corsLogout);
 
 export default router;

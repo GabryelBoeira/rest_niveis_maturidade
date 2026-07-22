@@ -2,10 +2,17 @@ import { Router } from "express";
 import { createOrderService } from "../services/order.service";
 import { Resource, ResourceCollection } from "../http/resource";
 import { NotFoundError } from "../errors";
+import { defaultCorsOptions } from "../http/cors";
+import cors from "cors";
 
 const router = Router();
 
-router.post("/", async (req, res, next) => {
+const corsBasePath = cors({
+  ...defaultCorsOptions,
+  methods: ["GET", "POST"],
+});
+
+router.post("/", corsBasePath, async (req, res, next) => {
   const orderService = await createOrderService();
 
   // @ts-expect-error
@@ -23,7 +30,7 @@ router.post("/", async (req, res, next) => {
   next(resource);
 });
 
-router.get("/", async (req, res, next) => {
+router.get("/", corsBasePath, async (req, res, next) => {
   const orderService = await createOrderService();
   const { page = 1, limit = 10 } = req.query;
   // @ts-expect-error
@@ -51,5 +58,7 @@ router.get("/", async (req, res, next) => {
   });
   next(collection);
 });
+
+router.options("/", corsBasePath);
 
 export default router;

@@ -1,9 +1,26 @@
 import { Router } from "express";
 import { createCartService } from "../services/cart.service";
+import { defaultCorsOptions } from "../http/cors";
+import cors from "cors";
 
 const router = Router();
 
-router.post("/", async (req, res) => {
+const corsBasePath = cors({
+  ...defaultCorsOptions,
+  methods: ["POST"],
+});
+
+const corsCard = cors({
+  ...defaultCorsOptions,
+  methods: ["POST", "GET", "DELETE"],
+});
+
+const corsItem = cors({
+  ...defaultCorsOptions,
+  methods: ["POST", "DELETE"],
+});
+
+router.post("/", corsBasePath, async (req, res) => {
   const cartService = await createCartService();
   // @ts-expect-error
   const customerId = req.userId;
@@ -13,7 +30,7 @@ router.post("/", async (req, res) => {
   res.json(cart);
 });
 
-router.post("/:cartUuid/items", async (req, res) => {
+router.post("/:cartUuid/items", corsItem, async (req, res) => {
   const cartService = await createCartService();
   const uuid = req.params.cartUuid;
   const { productId, quantity } = req.body;
@@ -44,13 +61,13 @@ router.post("/:cartUuid/items", async (req, res) => {
   });
 });
 
-router.get("/:cartUuid", async (req, res) => {
+router.get("/:cartUuid", corsCard, async (req, res) => {
   const cartService = await createCartService();
   const cart = await cartService.getCart(req.params.cartUuid);
   res.json(cart);
 });
 
-router.delete("/:cartUuid/items/:itemId", async (req, res) => {
+router.delete("/:cartUuid/items/:itemId", corsItem, async (req, res) => {
   const cartService = await createCartService();
 
   await cartService.removeItemFromCart({
@@ -61,10 +78,14 @@ router.delete("/:cartUuid/items/:itemId", async (req, res) => {
   res.send({ message: "Item removed from cart" });
 });
 
-router.post("/:cartUuid/clear", async (req, res) => {
+router.post("/:cartUuid/clear", corsCard, async (req, res) => {
   const cartService = await createCartService();
   const cart = await cartService.clearCart(req.params.cartUuid);
   res.json(cart);
 });
+
+router.options("/", corsBasePath);
+router.options("/:cartUuid", corsCard);
+router.options("/:cartUuid/items/:itemId", corsItem);
 
 export default router;
