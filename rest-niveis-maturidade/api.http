@@ -193,6 +193,7 @@ Origin: http://localhost:3000
 OPTIONS http://localhost:3000/admin/products/1
 Origin: http://localhost:3000
 
+###
 # @name createProduct
 POST http://localhost:3000/admin/products
 Content-Type: application/json

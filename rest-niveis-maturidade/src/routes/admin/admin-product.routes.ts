@@ -4,6 +4,8 @@ import { Resource, ResourceCollection } from "../../http/resource";
 import { NotFoundError } from "../../errors";
 import { defaultCorsOptions } from "../../http/cors";
 import cors from "cors";
+import { LinkBuilder } from "../../http/link-builder";
+import { ResourceCollectionHAL } from "../../http/resource-collection";
 
 const router = Router();
 
@@ -29,25 +31,14 @@ router.post("/", corsOptions, async (req, res, next) => {
   );
 
   res.status(201);
-  const resource = new Resource(product, {
-    _links: {
-      self: {
-        href: `/admin/products/${product.id}`,
-        action: "GET",
-        type: "application/json",
-      },
-      update: {
-        href: `/admin/products/${product.id}`,
-        action: "PATCH",
-        type: "application/json",
-      },
-      delete: {
-        href: `/admin/products/${product.id}`,
-        action: "DELETE",
-        type: "application/json",
-      },
-    },
-  });
+  const resource = new Resource(
+    product,
+    LinkBuilder.from("/admin/products", product.id)
+      .self()
+      .patch()
+      .delete()
+      .build(),
+  );
   next(resource);
 });
 
@@ -65,7 +56,14 @@ router.get("/:productId", corsItem, async (req, res, next) => {
     );
   }
 
-  const resource = new Resource(product);
+  const resource = new Resource(
+    product,
+    LinkBuilder.from("/admin/products", product.id)
+      .self()
+      .patch()
+      .delete()
+      .build(),
+  );
   next(resource);
 });
 
@@ -83,7 +81,14 @@ router.patch("/:productId", corsItem, async (req, res, next) => {
     categoryIds,
   });
 
-  const resource = new Resource(product);
+  const resource = new Resource(
+    product,
+    LinkBuilder.from("/admin/products", productId)
+      .self()
+      .patch()
+      .delete()
+      .build(),
+  );
   next(resource);
 });
 
@@ -122,13 +127,19 @@ router.get("/", corsOptions, async (req, res, next) => {
     req.headers["accept"] === "*/*" ||
     req.headers["accept"] === "application/json"
   ) {
-    const collection = new ResourceCollection(products, {
-      pagination: {
-        page: parseInt(page as string),
-        limit: parseInt(limit as string),
-        total,
+    const collection = new ResourceCollectionHAL(
+      products,
+      "/admin/products", // Caminho base da rota
+      req.query, // Query params atuais para preservar os filtros
+      {
+        pagination: {
+          page: parseInt(page as string),
+          limit: parseInt(limit as string),
+          total,
+        },
       },
-    });
+    );
+
     return next(collection);
   }
 
