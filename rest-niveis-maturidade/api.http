@@ -201,7 +201,7 @@ Authorization: Bearer {{ token }}
 Origin: http://localhost:3000
 
 {
-  "name": "Product Name",
+  "name": "Product aName",
   "slug": "product-slug",
   "description": "Product Description",
   "price": 100,
